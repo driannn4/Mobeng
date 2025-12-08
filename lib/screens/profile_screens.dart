@@ -65,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.only(top: 60, bottom: 40, left: 20, right: 20),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color.fromARGB(255, 216, 96, 9), Color.fromARGB(255, 240, 155, 27)],
+                    colors: [Color.fromARGB(255, 22, 44, 243), Color.fromARGB(255, 240, 155, 27)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),

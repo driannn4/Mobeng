@@ -17,6 +17,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0 # ✅ Versi terbaru agar kompatibel
+  firebase_core: ^2.24.0 #login firebase 
+  firebase_auth: ^4.17.0
+  google_sign_in: ^6.1.0
 
 flutter:
   uses-material-design: true

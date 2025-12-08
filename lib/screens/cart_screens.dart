@@ -192,7 +192,7 @@ class _CartScreenState extends State<CartScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text("Checkout"),
+                    child: const Text("Checkout",style: TextStyle(color: Colors.white),),
                   )
                 ],
               ),

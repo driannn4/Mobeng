@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // Background abu-abu
-      backgroundColor: const Color(0xFFE0E0E0),
+      backgroundColor: const Color.fromARGB(255, 48, 173, 235),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -160,13 +160,13 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 255, 193, 48),
+                              backgroundColor: const Color.fromARGB(255, 27, 56, 244),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            child: const Text('Login', style: TextStyle(fontSize: 18)),
+                            child: const Text('Login', style: TextStyle(color: Colors.white, fontSize: 18)),
                           ),
                           const SizedBox(height: 20),
                           const Center(
