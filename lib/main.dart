@@ -1,21 +1,20 @@
-// main.dart
+// lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart'; // ✅ WAJIB: Untuk inisialisasi Firebase
-import 'firebase_options.dart'; // ✅ WAJIB: File konfigurasi yang baru dibuat
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart'; 
 import 'screens/welcome_screens.dart';
 import 'screens/login_screens.dart';
-// Jika sudah membuat class MainNavigation, impor di sini:
-// import 'screens/main_navigation.dart'; 
+import 'screens/main_navigation.dart';
 
 void main() async {
-  // 1. Wajib dipanggil untuk inisialisasi binding sebelum Firebase
-  WidgetsFlutterBinding.ensureInitialized(); 
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. INISIALISASI FIREBASE (Wajib ada setelah flutterfire configure)
+  // Pastikan Firebase diinisialisasi
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
   runApp(const MyApp());
 }
 
@@ -25,16 +24,51 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tugas MP1',
+      title: 'Mobile Bengkel App',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+
+      // Start app → cek login dulu
+      initialRoute: '/checkauth',
+
       routes: {
-        '/': (context) => const WelcomeScreen(),
-        '/welcome': (context) => const WelcomeScreen(), 
-        // 🚨 PERBAIKAN: Menggunakan LoginScreen (bukan LoginPage)
-        '/login': (context) => const LoginScreen(), 
-        // Contoh jika navigasi utama sudah dibuat:
-        // '/main': (context) => MainNavigation(username: 'User'), 
+        '/checkauth': (context) => const AuthChecker(),
+        // '/' sekarang akan menampilkan WelcomeScreen (Default Route)
+        '/': (context) => const WelcomeScreen(), 
+        '/welcome': (context) => const WelcomeScreen(),
+        '/login': (context) => const LoginScreen(),
+      },
+    );
+  }
+}
+
+// Mengecek status login
+class AuthChecker extends StatelessWidget {
+  const AuthChecker({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Status loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final user = snapshot.data;
+
+        // Jika sudah login → masuk MainNavigation
+        if (user != null) {
+          final username =
+              user.displayName ?? user.email?.split('@')[0] ?? 'User';
+
+          return MainNavigation(username: username);
+        }
+
+        // ✅ PERBAIKAN: Jika belum login → arahkan ke Welcome Screen
+        return const WelcomeScreen(); 
       },
     );
   }

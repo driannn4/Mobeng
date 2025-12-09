@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '633065544714',
     projectId: 'mobeng-a6775',
     storageBucket: 'mobeng-a6775.firebasestorage.app',
+    iosClientId: '633065544714-j3199q6884krp2tli4hi5h83tqrhu1vu.apps.googleusercontent.com',
     iosBundleId: 'com.example.tugasMp1',
   );
 
@@ -73,6 +74,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '633065544714',
     projectId: 'mobeng-a6775',
     storageBucket: 'mobeng-a6775.firebasestorage.app',
+    iosClientId: '633065544714-j3199q6884krp2tli4hi5h83tqrhu1vu.apps.googleusercontent.com',
     iosBundleId: 'com.example.tugasMp1',
   );
 
@@ -85,4 +87,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'mobeng-a6775.firebasestorage.app',
     measurementId: 'G-HF0CX6290K',
   );
+
 }

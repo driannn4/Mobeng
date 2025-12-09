@@ -4,8 +4,7 @@ import '../screens/product_detail_screens.dart';
 import '../api/product_api.dart';
 import '../screens/product_form_screen.dart';
 
-
-const Color primaryColor = Color.fromARGB(255, 240, 155, 27); // WARNA ORANGE ASLI
+const Color primaryColor = Color.fromARGB(255, 240, 155, 27); 
 const Color backgroundColor = Color(0xFFF5F5F5);
 
 class ShopScreens extends StatefulWidget {
@@ -21,7 +20,6 @@ class _ShopScreensState extends State<ShopScreens> {
   String query = '';
   String selectedCategory = 'Semua';
 
-  // API DATA
   List<dynamic> apiProducts = [];
   bool isLoading = true;
 
@@ -41,7 +39,13 @@ class _ShopScreensState extends State<ShopScreens> {
     try {
       final data = await ProductApi.getProducts();
       setState(() {
-        apiProducts = data;
+        // Memastikan ID adalah string dan Price adalah num/double
+        apiProducts = data.map((item) => {
+          ...item,
+          'id': item['id'].toString(), // Pastikan ID adalah string
+          'description': item['description'] ?? '', // Pastikan ada deskripsi
+          'price': item['price'] is num ? item['price'] : 0, // Pastikan harga adalah num
+        }).toList();
         isLoading = false;
       });
     } catch (e) {
@@ -66,19 +70,19 @@ class _ShopScreensState extends State<ShopScreens> {
     return Scaffold(
       backgroundColor: backgroundColor,
 
-        // 🔥 Floating Action Button (HANYA IKON '+')
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ProductFormScreen()),
-            );
-            if (result == true) {
-              loadProducts();
-            }
-          },
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            // Panggil ProductFormScreen dengan productToEdit: null
+            MaterialPageRoute(builder: (_) => const ProductFormScreen(productToEdit: null)),
+          );
+          if (result == true) {
+            loadProducts();
+          }
+        },
         backgroundColor: primaryColor,
-        child: const Icon(Icons.add, color: Colors.white), // HANYA IKON
+        child: const Icon(Icons.add, color: Colors.white),
       ),
 
       body: SafeArea(
@@ -87,9 +91,7 @@ class _ShopScreensState extends State<ShopScreens> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --------------------------------------------------------
-              // SEARCH BAR
-              // --------------------------------------------------------
+              // SEARCH (TIDAK BERUBAH)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
@@ -114,9 +116,7 @@ class _ShopScreensState extends State<ShopScreens> {
               ),
               const SizedBox(height: 12),
 
-              // --------------------------------------------------------
-              // KATEGORI
-              // --------------------------------------------------------
+              // KATEGORI (TIDAK BERUBAH)
               const Text(
                 'Kategori Produk',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -154,9 +154,7 @@ class _ShopScreensState extends State<ShopScreens> {
               ),
               const SizedBox(height: 8),
 
-              // --------------------------------------------------------
               // GRID PRODUK
-              // --------------------------------------------------------
               Expanded(
                 child: isLoading
                     ? const Center(
@@ -176,14 +174,18 @@ class _ShopScreensState extends State<ShopScreens> {
                               crossAxisCount: 2,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
-                              childAspectRatio: 3 / 4,
+                              // ✅ PERBAIKAN 1: Tambah tinggi kartu agar tidak overflow
+                              childAspectRatio: 3 / 4.5, 
                             ),
                             itemBuilder: (context, index) {
                               final product = filteredProducts[index];
                               return ShopProductCard(
+                                id: product['id'],
                                 name: product['name'],
                                 price: product['price'],
                                 imagePath: product['image'],
+                                description: product['description'], 
+                                onRefresh: loadProducts,
                               );
                             },
                           ),
@@ -200,16 +202,55 @@ class _ShopScreensState extends State<ShopScreens> {
 // CARD PRODUK
 // ============================================================================
 class ShopProductCard extends StatelessWidget {
+  final String id;
   final String name;
-  final int price;
+  final num price; // FIX 2: Menggunakan num
   final String imagePath;
+  final String description; 
+  final VoidCallback onRefresh;
 
   const ShopProductCard({
     super.key,
+    required this.id,
     required this.name,
     required this.price,
     required this.imagePath,
+    required this.description, 
+    required this.onRefresh,
   });
+  
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Hapus Produk"),
+        content: Text("Yakin ingin menghapus '$name'?"),
+        actions: [
+          TextButton(
+            child: const Text("Batal"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          TextButton(
+            child: const Text("Hapus", style: TextStyle(color: Colors.red)),
+            onPressed: () async {
+              Navigator.pop(context); 
+              try {
+                await ProductApi.deleteProduct(id);
+                onRefresh(); 
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Produk berhasil dihapus!')),
+                );
+              } catch (e) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Gagal menghapus: $e')),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,14 +268,16 @@ class ShopProductCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 imagePath,
-                height: 80,
+                height: 100,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                // ✅ PERBAIKAN 2: Gunakan contain agar gambar utuh tidak terpotong
+                fit: BoxFit.contain, 
                 errorBuilder: (_, __, ___) =>
                     const Icon(Icons.broken_image, size: 40),
               ),
             ),
             const SizedBox(height: 10),
+
             Text(
               name,
               textAlign: TextAlign.center,
@@ -244,32 +287,41 @@ class ShopProductCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
+
             Text(
-              'Rp$price',
+              'Rp${price.toInt()}', 
               style: const TextStyle(
                 fontSize: 14,
-                color: Colors.green, // PERHATIAN: Warna harga masih hijau
+                color: Colors.green,
                 fontWeight: FontWeight.w600,
               ),
             ),
+
             const Spacer(),
 
-            // BUTTONS
+            // BUTTON Action (TIDAK BERUBAH)
             Row(
               children: [
+                // DETAIL BUTTON
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      // FIX 4: Kirim data lengkap ke Detail Screen
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => ProductDetailScreen(
+                            id: id,
                             name: name,
-                            price: price,
+                            price: price.toInt(),
                             imagePath: imagePath,
+                            description: description,
                           ),
                         ),
                       );
+                      if (result == true) {
+                        onRefresh();
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -289,9 +341,10 @@ class ShopProductCard extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 8),
 
-                // ADD TO CART
+                // ADD TO CART (TETAP SAMA)
                 Container(
                   height: 42,
                   width: 42,
@@ -310,7 +363,7 @@ class ShopProductCard extends StatelessWidget {
                       } else {
                         cartItems.add({
                           'name': name,
-                          'price': price,
+                          'price': price.toInt(),
                           'quantity': 1,
                         });
                       }
@@ -323,6 +376,42 @@ class ShopProductCard extends StatelessWidget {
                       );
                     },
                   ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            // EDIT + DELETE (TIDAK BERUBAH)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                  onPressed: () async {
+                    // FIX 5: Mengirim data lengkap untuk diedit
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProductFormScreen(
+                          productToEdit: {
+                            'id': id,
+                            'name': name,
+                            'price': price,
+                            'image': imagePath,
+                            'description': description, 
+                          },
+                        ),
+                      ),
+                    );
+                    if (result == true) {
+                      onRefresh();
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _confirmDelete(context), 
                 ),
               ],
             ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'cart_data.dart';
 
-const Color primaryColor = Color.fromARGB(255, 20, 134, 255);
+// Warna utama aplikasi (orange)
+const Color primaryColor = Color.fromARGB(255, 240, 155, 27);
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -57,7 +58,10 @@ class _CartScreenState extends State<CartScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
+            child: const Text(
+              "Batal",
+              style: TextStyle(color: Colors.grey),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
@@ -68,7 +72,7 @@ class _CartScreenState extends State<CartScreen> {
                 const SnackBar(content: Text("Checkout berhasil!")),
               );
             },
-            child: const Text("Lanjut"),
+            child: const Text("Lanjut", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -90,7 +94,12 @@ class _CartScreenState extends State<CartScreen> {
           children: [
             Expanded(
               child: cartItems.isEmpty
-                  ? const Center(child: Text("Keranjang kosong"))
+                  ? const Center(
+                      child: Text(
+                        "Keranjang kosong",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: cartItems.length,
                       itemBuilder: (context, index) {
@@ -117,20 +126,33 @@ class _CartScreenState extends State<CartScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(item['name'],
-                                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    Text(
+                                      item['name'],
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
                                     const SizedBox(height: 4),
-                                    Text('Rp ${item['price']} x ${item['quantity']}',
-                                        style: const TextStyle(color: Colors.grey)),
+                                    Text(
+                                      'Rp ${item['price']} x ${item['quantity']}',
+                                      style: const TextStyle(color: Colors.grey),
+                                    ),
+                                    const SizedBox(height: 6),
                                     Row(
                                       children: [
                                         IconButton(
-                                          icon: const Icon(Icons.remove_circle, color: Colors.red),
+                                          icon: const Icon(Icons.remove_circle,
+                                              color: Colors.red),
                                           onPressed: () => decreaseQty(index),
                                         ),
-                                        Text('${item['quantity']}'),
+                                        Text(
+                                          '${item['quantity']}',
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
                                         IconButton(
-                                          icon: const Icon(Icons.add_circle, color: primaryColor),
+                                          icon: const Icon(Icons.add_circle,
+                                              color: primaryColor),
                                           onPressed: () => increaseQty(index),
                                         ),
                                       ],
@@ -138,6 +160,7 @@ class _CartScreenState extends State<CartScreen> {
                                   ],
                                 ),
                               ),
+
                               // Kanan: Total dan hapus
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -145,8 +168,9 @@ class _CartScreenState extends State<CartScreen> {
                                   Text(
                                     'Rp ${item['price'] * item['quantity']}',
                                     style: const TextStyle(
-                                      color: Colors.green,
+                                      color: primaryColor,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: 16,
                                     ),
                                   ),
                                   IconButton(
@@ -161,6 +185,7 @@ class _CartScreenState extends State<CartScreen> {
                       },
                     ),
             ),
+
             // Footer Total & Checkout
             Container(
               padding: const EdgeInsets.all(16),
@@ -168,7 +193,8 @@ class _CartScreenState extends State<CartScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: const [
-                  BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, -2))
+                  BoxShadow(
+                      color: Colors.black12, blurRadius: 4, offset: Offset(0, -2))
                 ],
               ),
               child: Column(
@@ -176,13 +202,26 @@ class _CartScreenState extends State<CartScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("Total", style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text("Rp ${getTotal().toStringAsFixed(0)}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: primaryColor, fontSize: 16)),
+                      const Text(
+                        "Total",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        "Rp ${getTotal().toStringAsFixed(0)}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                          fontSize: 18,
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
+
+                  // Tombol Checkout
                   ElevatedButton(
                     onPressed: handleCheckout,
                     style: ElevatedButton.styleFrom(
@@ -192,7 +231,10 @@ class _CartScreenState extends State<CartScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text("Checkout",style: TextStyle(color: Colors.white),),
+                    child: const Text(
+                      "Checkout",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
                   )
                 ],
               ),
