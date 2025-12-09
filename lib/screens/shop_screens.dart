@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'cart_data.dart';
-import 'product_detail_screens.dart';
+import '../screens/product_detail_screens.dart';
+import '../api/product_api.dart';
+import '../screens/product_form_screen.dart';
 
-const Color primaryColor = Color.fromARGB(255, 240, 155, 27);
+
+const Color primaryColor = Color.fromARGB(255, 240, 155, 27); // WARNA ORANGE ASLI
 const Color backgroundColor = Color(0xFFF5F5F5);
 
 class ShopScreens extends StatefulWidget {
@@ -18,61 +21,75 @@ class _ShopScreensState extends State<ShopScreens> {
   String query = '';
   String selectedCategory = 'Semua';
 
-  final List<Map<String, dynamic>> productList = const [
-    {
-      'name': 'Oli Motor',
-      'price': 85000,
-      'imagePath': 'assets/images/oli.jpeg',
-    },
-    {
-      'name': 'Kampas Rem',
-      'price': 45000,
-      'imagePath': 'assets/images/Kampas.jpeg',
-    },
-    {
-      'name': 'Aki Motor',
-      'price': 120000,
-      'imagePath': 'assets/images/aki.jpg',
-    },
-    {
-      'name': 'Busi Motor',
-      'price': 30000,
-      'imagePath': 'assets/images/busi.jpg',
-    },
-    {
-      'name': 'Filter Udara',
-      'price': 60000,
-      'imagePath': 'assets/images/filter.jpg',
-    },
-    {
-      'name': 'Rantai Motor',
-      'price': 90000,
-      'imagePath': 'assets/images/rantei.jpeg',
-    },
-  ];
+  // API DATA
+  List<dynamic> apiProducts = [];
+  bool isLoading = true;
+
+  List<dynamic> get productList => apiProducts;
 
   final List<String> categories = [
     'Semua', 'Oli', 'Rem', 'Aki', 'Busi', 'Filter', 'Rantai'
   ];
 
   @override
+  void initState() {
+    super.initState();
+    loadProducts();
+  }
+
+  void loadProducts() async {
+    try {
+      final data = await ProductApi.getProducts();
+      setState(() {
+        apiProducts = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("API Error: $e");
+      setState(() => isLoading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final filteredProducts = productList.where((product) {
-      final nameMatch = product['name'].toLowerCase().contains(query.toLowerCase());
+      final nameMatch =
+          product['name'].toString().toLowerCase().contains(query.toLowerCase());
       final categoryMatch = selectedCategory == 'Semua' ||
-          product['name'].toLowerCase().contains(selectedCategory.toLowerCase());
+          product['name']
+              .toString()
+              .toLowerCase()
+              .contains(selectedCategory.toLowerCase());
       return nameMatch && categoryMatch;
     }).toList();
 
     return Scaffold(
       backgroundColor: backgroundColor,
+
+        // 🔥 Floating Action Button (HANYA IKON '+')
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProductFormScreen()),
+            );
+            if (result == true) {
+              loadProducts();
+            }
+          },
+        backgroundColor: primaryColor,
+        child: const Icon(Icons.add, color: Colors.white), // HANYA IKON
+      ),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Search Bar
+              // --------------------------------------------------------
+              // SEARCH BAR
+              // --------------------------------------------------------
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
@@ -97,13 +114,15 @@ class _ShopScreensState extends State<ShopScreens> {
               ),
               const SizedBox(height: 12),
 
+              // --------------------------------------------------------
+              // KATEGORI
+              // --------------------------------------------------------
               const Text(
                 'Kategori Produk',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
 
-              // Category Chips
               SizedBox(
                 height: 36,
                 child: ListView(
@@ -126,6 +145,7 @@ class _ShopScreensState extends State<ShopScreens> {
                   }).toList(),
                 ),
               ),
+
               const SizedBox(height: 16),
 
               Text(
@@ -134,32 +154,39 @@ class _ShopScreensState extends State<ShopScreens> {
               ),
               const SizedBox(height: 8),
 
-              // Produk Grid
+              // --------------------------------------------------------
+              // GRID PRODUK
+              // --------------------------------------------------------
               Expanded(
-                child: filteredProducts.isEmpty
+                child: isLoading
                     ? const Center(
-                        child: Text(
-                          'Produk tidak ditemukan',
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                        child: CircularProgressIndicator(color: primaryColor),
                       )
-                    : GridView.builder(
-                        itemCount: filteredProducts.length,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          childAspectRatio: 3 / 4,
-                        ),
-                        itemBuilder: (context, index) {
-                          final product = filteredProducts[index];
-                          return ShopProductCard(
-                            name: product['name'],
-                            price: product['price'],
-                            imagePath: product['imagePath'],
-                          );
-                        },
-                      ),
+                    : filteredProducts.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Produk tidak ditemukan',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          )
+                        : GridView.builder(
+                            itemCount: filteredProducts.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 3 / 4,
+                            ),
+                            itemBuilder: (context, index) {
+                              final product = filteredProducts[index];
+                              return ShopProductCard(
+                                name: product['name'],
+                                price: product['price'],
+                                imagePath: product['image'],
+                              );
+                            },
+                          ),
               ),
             ],
           ),
@@ -169,6 +196,9 @@ class _ShopScreensState extends State<ShopScreens> {
   }
 }
 
+// ============================================================================
+// CARD PRODUK
+// ============================================================================
 class ShopProductCard extends StatelessWidget {
   final String name;
   final int price;
@@ -195,11 +225,13 @@ class ShopProductCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
+              child: Image.network(
                 imagePath,
                 height: 80,
                 width: double.infinity,
                 fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.broken_image, size: 40),
               ),
             ),
             const SizedBox(height: 10),
@@ -216,11 +248,13 @@ class ShopProductCard extends StatelessWidget {
               'Rp$price',
               style: const TextStyle(
                 fontSize: 14,
-                color: Colors.green,
+                color: Colors.green, // PERHATIAN: Warna harga masih hijau
                 fontWeight: FontWeight.w600,
               ),
             ),
             const Spacer(),
+
+            // BUTTONS
             Row(
               children: [
                 Expanded(
@@ -256,6 +290,8 @@ class ShopProductCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
+
+                // ADD TO CART
                 Container(
                   height: 42,
                   width: 42,
@@ -267,7 +303,8 @@ class ShopProductCard extends StatelessWidget {
                     icon: const Icon(Icons.add_shopping_cart,
                         color: Colors.white, size: 20),
                     onPressed: () {
-                      final index = cartItems.indexWhere((item) => item['name'] == name);
+                      final index = cartItems.indexWhere(
+                          (item) => item['name'] == name);
                       if (index != -1) {
                         cartItems[index]['quantity'] += 1;
                       } else {

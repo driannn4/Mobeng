@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "633065544714",
+    "project_id": "mobeng-a6775",
+    "storage_bucket": "mobeng-a6775.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633065544714:android:055a3c8e435ec425fd53f3",
+        "android_client_info": {
+          "package_name": "com.example.tugas_mp1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaeFoSc6Ap9a_3jGzN9ka8IbtSEZB_bz4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

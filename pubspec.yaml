@@ -5,25 +5,35 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  # ✅ Gunakan SDK yang kompatibel dengan versi Firebase terbaru (Dart 3.x)
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  
+  # Versi stabil
   carousel_slider: ^5.0.0
   google_fonts: ^6.1.0 
+  
+  # ✅ PERBAIKAN PENTING: Upgrade Firebase Core & Auth ke versi modern
+  # Versi 2.x ke atas wajib untuk kompatibilitas Flutter/Dart terbaru
+  firebase_core: ^2.27.0 
+  firebase_auth: ^4.20.0 
+  
+  # Versi terbaru yang kompatibel dengan konfigurasi Firebase baru
+  google_sign_in: ^6.2.1 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0 # ✅ Versi terbaru agar kompatibel
-  firebase_core: ^2.24.0 #login firebase 
-  firebase_auth: ^4.17.0
-  google_sign_in: ^6.1.0
+  flutter_lints: ^3.0.0 
 
 flutter:
   uses-material-design: true
 
+  # ✅ Koreksi Format: Pastikan daftar aset berada di bawah 'assets:'
   assets:
     - assets/images/Google.webp
     - assets/images/Logo.png

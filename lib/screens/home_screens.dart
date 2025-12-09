@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-const Color primaryColor = Color.fromARGB(255, 15, 45, 241);
+// --- DEFINISI WARNA BARU (Navy Primary, Orange Accent) ---
+const Color primaryColor = Color.fromARGB(255, 13, 76, 154); // Navy Blue
 const Color backgroundColor = Color(0xFFFDFDFD);
 const Color darkTextColor = Color(0xFF2C2C2C);
-const Color accentColor = Color(0xFFFFD580);
+const Color accentColor = Color.fromARGB(255, 195, 86, 23); // Burnt Orange
 
 class HomeScreens extends StatefulWidget {
   final String username;
@@ -60,7 +61,7 @@ class _HomeScreensState extends State<HomeScreens> {
                     ),
                   ],
                 ),
-                const Icon(Icons.notifications_none_outlined)
+                const Icon(Icons.notifications_none_outlined, color: primaryColor) // Icon diwarnai Primary
               ],
             ),
             const SizedBox(height: 20),
@@ -95,7 +96,8 @@ class _HomeScreensState extends State<HomeScreens> {
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: primaryColor.withOpacity(_current == entry.key ? 0.9 : 0.3),
+                    // Penanda slider menggunakan Accent Color (Orange)
+                    color: accentColor.withOpacity(_current == entry.key ? 0.9 : 0.3),
                   ),
                 );
               }).toList(),
@@ -116,18 +118,19 @@ class _HomeScreensState extends State<HomeScreens> {
 
             // Reminder Servis
             Text('Reminder Servis',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700)),
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: primaryColor)),
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
+                // Gradien disesuaikan dengan skema warna baru
                 gradient: LinearGradient(
-                  colors: [const Color.fromARGB(255, 13, 76, 235).withOpacity(0.1), const Color.fromARGB(255, 236, 199, 158)],
+                  colors: [primaryColor.withOpacity(0.08), accentColor.withOpacity(0.1)],
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(255, 9, 39, 210).withOpacity(0.15),
+                    color: primaryColor.withOpacity(0.15),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -135,7 +138,7 @@ class _HomeScreensState extends State<HomeScreens> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.notifications_active, color: primaryColor, size: 28),
+                  Icon(Icons.notifications_active, color: accentColor, size: 28), // Ikon menggunakan Orange
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -150,7 +153,7 @@ class _HomeScreensState extends State<HomeScreens> {
 
             // Jadwal Booking Hari Ini
             Text('Jadwal Booking Hari Ini',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700)),
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: primaryColor)),
             const SizedBox(height: 12),
             Column(
               children: [
@@ -162,12 +165,12 @@ class _HomeScreensState extends State<HomeScreens> {
 
             // Tips Hari Ini
             Text('Tips Hari Ini',
-                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700)),
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: primaryColor)),
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 172, 191, 242),
+                color: primaryColor.withOpacity(0.1), // Latar belakang Tips menggunakan Primary Color (Navy) yang lembut
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -183,7 +186,7 @@ class _HomeScreensState extends State<HomeScreens> {
               icon: const Icon(Icons.smart_toy_outlined),
               label: Text("Simulasi Servis Virtual", style: GoogleFonts.poppins()),
               style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
+                backgroundColor: accentColor, // Tombol Aksi menggunakan Orange
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -237,14 +240,14 @@ class _HomeScreensState extends State<HomeScreens> {
                       trailing: Text(
                         "Rp ${item['price']}",
                         style: GoogleFonts.poppins(
-                            color: primaryColor, fontWeight: FontWeight.bold),
+                            color: accentColor, fontWeight: FontWeight.bold), // Harga menggunakan Orange
                       ),
                       onTap: () {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
                               'Estimasi biaya untuk ${item['title']} adalah Rp ${item['price']}'),
-                          backgroundColor: primaryColor,
+                          backgroundColor: accentColor, // Notifikasi menggunakan Orange
                         ));
                       },
                     );
@@ -263,15 +266,16 @@ class _HomeScreensState extends State<HomeScreens> {
       children: [
         Container(
           decoration: BoxDecoration(
+            // Gradien Quick Action menggunakan Orange dan Primary
             gradient: LinearGradient(
-              colors: [primaryColor, Colors.orangeAccent],
+              colors: [accentColor, primaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.orange.withOpacity(0.3),
+                color: accentColor.withOpacity(0.5),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -299,7 +303,7 @@ class _HomeScreensState extends State<HomeScreens> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.calendar_today, size: 20, color: primaryColor),
+          const Icon(Icons.calendar_today, size: 20, color: primaryColor), // Icon menggunakan Primary Color (Navy)
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
